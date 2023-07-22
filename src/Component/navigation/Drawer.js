@@ -6,10 +6,10 @@ import Home from '../Screen/Home';
 
 const Drawer = createDrawerNavigator();
 
-const DrawerComponent = ({ navigation }) => {
+const DrawerComponent = ({ navigation, route }) => {
     return (
-        <Drawer.Navigator initialRouteName="Home">
-            <Drawer.Screen name="Home" component={Home} />
+        <Drawer.Navigator initialRouteName="Introduce">
+            {/* <Drawer.Screen name="Home" component={Home} /> */}
             <Drawer.Screen name="Introduce" component={IntroduceTopTabComponent} />
             <Drawer.Screen name="Projects" component={ProjectTopTabComponent} />
         </Drawer.Navigator>

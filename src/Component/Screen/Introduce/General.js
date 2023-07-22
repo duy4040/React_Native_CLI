@@ -1,55 +1,78 @@
-import React from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, View, Text, ScrollView, FlatList } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 
-export default function General() {
+import { getProfile } from '../../../Redux/actions';
+
+export default function General({ navigation, route }) {
+    const { profiles } = useSelector((state) => state.userReducer);
+    const dispatch = useDispatch();
+    const user = {};
+
+    const { itemID } = route.params;
+    console.log(itemID);
+
+    profiles.map((profile) => {
+        if (profile.id === itemID) {
+            user = { ...user, profile };
+            console.log(user);
+        }
+    });
+
+    useEffect(() => {
+        dispatch(getProfile());
+    }, []);
+
     return (
-        <View style={styles.body}>
+        <ScrollView style={styles.body}>
             <Text style={styles.title}>Contact Information</Text>
-            <ScrollView>
-                <View style={styles.list}>
-                    <View style={styles.item}>
-                        <Text style={styles.label}>Name</Text>
-                        <Text style={styles.content}>Nguyễn Vũ Duy</Text>
+            <FlatList
+                data={profiles}
+                renderItem={({ item }) => (
+                    <View style={styles.list}>
+                        <View style={styles.item}>
+                            <Text style={styles.label}>Name</Text>
+                            <Text style={styles.content}>{item.name}</Text>
+                        </View>
+                        <View style={styles.item}>
+                            <Text style={styles.label}>Birth</Text>
+                            <Text style={styles.content}>{item.birth}</Text>
+                        </View>
+                        <View style={styles.item}>
+                            <Text style={styles.label}>Phone</Text>
+                            <Text style={styles.content}>{item.phone}</Text>
+                        </View>
+                        <View style={styles.item}>
+                            <Text style={styles.label}>Email</Text>
+                            <Text style={styles.content}>{item.email}</Text>
+                        </View>
+                        <View style={styles.item}>
+                            <Text style={styles.label}>Address</Text>
+                            <Text style={styles.content}>{item.address}</Text>
+                        </View>
                     </View>
-                    <View style={styles.item}>
-                        <Text style={styles.label}>Birth</Text>
-                        <Text style={styles.content}>04/04/2001</Text>
-                    </View>
-                    <View style={styles.item}>
-                        <Text style={styles.label}>Phone</Text>
-                        <Text style={styles.content}>0879659113</Text>
-                    </View>
-                    <View style={styles.item}>
-                        <Text style={styles.label}>Email</Text>
-                        <Text style={styles.content}>duy20913@gmail.com</Text>
-                    </View>
-                    <View style={styles.item}>
-                        <Text style={styles.label}>Address</Text>
-                        <Text style={styles.content}>Hà Nội, Việt Nam</Text>
-                    </View>
-                </View>
-            </ScrollView>
+                )}
+                keyExtractor={(item) => item.id}
+            />
 
             <Text style={styles.title}>Skills</Text>
-            <ScrollView>
-                <View style={styles.list}>
-                    <View style={styles.item}>
-                        <Text style={styles.label}>Main</Text>
-                        <Text style={styles.content}>- HTML, CSS, JavaScript(ReactJS, React Native)</Text>
-                        <Text style={styles.content}>- PHP(Lavarel, Symfony, Codeigniter)</Text>
-                        <Text style={styles.content}>- Node(ExpressJS)</Text>
-                        <Text style={styles.content}>- MySQL, SQLServer</Text>
-                    </View>
-                    <View style={styles.item}>
-                        <Text style={styles.label}>Other</Text>
-                        <Text style={styles.content}>- Ruby(Ruby on Rails)</Text>
-                        <Text style={styles.content}>- Git</Text>
-                        <Text style={styles.content}>- Python</Text>
-                        <Text style={styles.content}>- Java</Text>
-                    </View>
+            <View style={styles.list}>
+                <View style={styles.item}>
+                    <Text style={styles.label}>Main</Text>
+                    <Text style={styles.content}>- HTML, CSS, JavaScript(ReactJS, React Native)</Text>
+                    <Text style={styles.content}>- PHP(Lavarel, Symfony, Codeigniter)</Text>
+                    <Text style={styles.content}>- Node(ExpressJS)</Text>
+                    <Text style={styles.content}>- MySQL, SQLServer</Text>
                 </View>
-            </ScrollView>
-        </View>
+                <View style={styles.item}>
+                    <Text style={styles.label}>Other</Text>
+                    <Text style={styles.content}>- Ruby(Ruby on Rails)</Text>
+                    <Text style={styles.content}>- Git</Text>
+                    <Text style={styles.content}>- Python</Text>
+                    <Text style={styles.content}>- Java</Text>
+                </View>
+            </View>
+        </ScrollView>
     );
 }
 

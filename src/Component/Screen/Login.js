@@ -1,46 +1,40 @@
 import { StyleSheet, Text, View, TextInput, Alert } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector, useDispatch } from 'react-redux';
 
+import { setName, getProfile } from '../../Redux/actions';
 import CustomButton from '../../utils/CustomButton';
 
-// API : https://mocki.io/v1/34009842-9c95-4c2c-9f0a-a63e70a35f62
-
-const Stack = createStackNavigator();
-
 const Login = ({ navigation }) => {
-    const [name, setName] = useState('');
-    const [age, setAge] = useState('');
+    const { name, profiles } = useSelector((state) => state.userReducer);
+    const dispatch = useDispatch();
+    const idRef = useRef(0);
 
     useEffect(() => {
-        getData();
+        dispatch(getProfile());
     }, []);
 
-    const getData = async () => {
-        try {
-            await AsyncStorage.getItem('UserData').then((value) => {
-                if (value !== null) {
-                    navigation.navigate('CV');
-                }
-            });
-        } catch (error) {
-            console.log(error);
-        }
+    const checkHasUsername = (name) => {
+        let isHasUsername = false;
+        profiles.map((profile) => {
+            if (name === profile.name) {
+                isHasUsername = true;
+            }
+        });
+
+        return isHasUsername;
     };
 
-    const setData = async () => {
-        if (name.length === 0 || age.length === 0) {
-            Alert.alert('Warning!', 'Please write your data.');
+    const login = async () => {
+        if (name.length === 0) {
+            Alert.alert('Warning!', 'Please write your name.');
+        } else if (checkHasUsername(name) === false) {
+            Alert.alert('Warning!', 'Please write correct your name.');
         } else {
             try {
-                var user = {
-                    name,
-                    age,
-                };
-                await AsyncStorage.setItem('UserData', JSON.stringify(user));
-                setName('');
-                navigation.navigate('CV');
+                dispatch(setName(name));
+                navigation.navigate('General', { itemID: 1 });
             } catch (error) {
                 console.log(error);
             }
@@ -49,24 +43,16 @@ const Login = ({ navigation }) => {
 
     return (
         <View style={styles.body}>
-            <Text style={styles.text}>Async Storage</Text>
+            <Text style={styles.text}>Call API</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Enter your name"
                 placeholderTextColor={'#ccc'}
                 value={name}
-                onChangeText={(value) => setName(value)}
+                onChangeText={(value) => dispatch(setName(value))}
                 clearTextOnFocus={true}
             />
-            <TextInput
-                style={styles.input}
-                placeholder="Enter your age"
-                placeholderTextColor={'#ccc'}
-                value={age}
-                onChangeText={(value) => setAge(value)}
-                clearTextOnFocus={true}
-            />
-            <CustomButton title="Login" color="#1eb900" onPressFunction={setData} />
+            <CustomButton title="Login" color="#1eb900" onPressFunction={login} />
         </View>
     );
 };
